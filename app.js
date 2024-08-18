@@ -1,14 +1,30 @@
 // Requirements
 const express = require('express');
 const app = express();
+const mongoose = require('mongoose');
+const pageRoute = require('./routes/pageRoute');
+const courseRoute = require('./routes/courseRoute');
 
-// Middlewares
+// Template Engine
 app.set('view engine', 'ejs');
 
-// Routings
-app.get('/', (req, res) => {
-  res.send('sa');
+// Middlewares
+app.use(express.static('public'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// DB Connection
+mongoose.connect('mongodb://localhost/smart-edu-db')
+.then(()=>{
+  console.log('Connected to DB!')
+})
+.catch((err)=>{
+  console.log(err)
 });
+
+// Routings
+app.use('/', pageRoute);
+app.use('/courses', courseRoute);
 
 // Server Start
 const port = 3000;
