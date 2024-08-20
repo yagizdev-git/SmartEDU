@@ -1,11 +1,11 @@
-const Category = require('../models/Category');
+const User = require('../models/User');
 
-exports.createCategory = async (req, res) => {
+exports.createUser = async (req, res) => {
   try {
-    const category = await Category.create(req.body);
+    const user = await User.create(req.body);
     res.status(201).json({
       status: 'success',
-      category,
+      user,
     });
   } catch (error) {
     res.status(400).json({
