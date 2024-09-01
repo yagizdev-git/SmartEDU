@@ -1,13 +1,12 @@
-const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const User = require('../models/User');
+const Category = require('../models/Category');
+const Course = require('../models/Course');
 
 exports.createUser = async (req, res) => {
   try {
     const user = await User.create(req.body);
-    res.status(201).json({
-      status: 'success',
-      user,
-    });
+    res.status(201).redirect('/login');
   } catch (error) {
     res.status(400).json({
       status: 'fail',
@@ -51,10 +50,17 @@ exports.logoutUser = (req, res) => {
 };
 
 exports.getDashboardPage = async (req, res) => {
-  const user = await User.findOne({ _id: req.session.userID });
+  const user = await User.findOne({ _id: req.session.userID }).populate('courses');
+  const categories = await Category.find();
+  const courses = await Course.find({ creator: req.session.userID }).populate({
+    path: 'creator',
+    select: 'name'
+  });
 
   res.status(200).render('dashboard', {
     pageName: 'dashboard',
     user,
+    categories,
+    courses
   });
 };
