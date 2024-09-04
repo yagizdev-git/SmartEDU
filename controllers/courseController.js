@@ -1,7 +1,6 @@
 const Course = require('../models/Course');
 const Category = require('../models/Category');
 const User = require('../models/User');
-const { query } = require('express');
 
 exports.createCourse = async (req, res) => {
   try {
@@ -11,12 +10,11 @@ exports.createCourse = async (req, res) => {
       category: req.body.category,
       creator: req.session.userID,
     });
+    req.flash('success', 'Course created successfully!');
     res.status(201).redirect('/courses');
   } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      error,
-    });
+    req.flash('error', 'An error occurred while creating the course!');
+    res.status(400).redirect('/courses');
   }
 };
 
@@ -97,12 +95,11 @@ exports.enrollCourse = async (req, res) => {
     await user.courses.push({ _id: req.body.course_id });
     await user.save();
 
+    req.flash('success', 'Course Enrolled!');
     res.status(200).redirect('/users/dashboard');
   } catch (err) {
-    res.status(500).json({
-      status: 'fail',
-      err,
-    })
+    req.flash('error', 'Course couldn\'t be Enrolled!');
+    res.status(400).redirect('/users/dashboard');
   }
 };
 
@@ -112,24 +109,44 @@ exports.releaseCourse = async (req, res) => {
     await user.courses.pull({ _id: req.body.course_id });
     await user.save();
 
+    req.flash('success', 'Course Released!');
     res.status(200).redirect('/users/dashboard');
   } catch (err) {
-    res.status(500).json({
-      status: 'fail',
-      err,
-    })
+    req.flash('error', 'Course couldn\'t be released!');
+    res.status(400).redirect('/users/dashboard');
   }
 };
 
 exports.deleteCourse = async (req, res) => {
   try {
     await Course.deleteOne( { _id: req.body.course_id } );
+    const users = await User.find({ courses: req.body.course_id });
+    if (users) {
+      users.forEach(async (user)=>{
+        await user.courses.pull({ _id: req.body.course_id });
+        await user.save();
+      });
+    }
+
+    req.flash('success', 'Course deleted successfully!');
+    res.status(200).redirect('/users/dashboard');
+  } catch (err) {
+    req.flash('error', 'An error occurred while deleting the course!');
+    res.status(400).redirect('/users/dashboard');
+  }
+};
+
+exports.updateCourse = async (req, res) => {
+  try {
+    const course = await Course.findOne({ slug: req.params.slug });
+    course.name = req.body.name;
+    course.description = req.body.description;
+    course.category = req.body.category;
+    course.save();
 
     res.status(200).redirect('/users/dashboard');
   } catch (err) {
-    res.status(500).json({
-      status: 'fail',
-      err,
-    })
+
+    res.status(400).redirect('/users/dashboard');
   }
 };

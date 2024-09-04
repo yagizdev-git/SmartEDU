@@ -4,7 +4,8 @@ const app = express();
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const mongoose = require('mongoose');
-const flash = require('express-flash');
+const flash = require('connect-flash');
+const methodOverride = require('method-override');
 const pageRoute = require('./routes/pageRoute');
 const courseRoute = require('./routes/courseRoute');
 const categoryRoute = require('./routes/categoryRoute');
@@ -25,12 +26,10 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
-
 // Middlewares
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// Session Use
 app.use(
   session({
     secret: 'keyboard cat',
@@ -39,12 +38,19 @@ app.use(
     store: MongoStore.create({ mongoUrl: 'mongodb://localhost/smart-edu-db' }),
   })
 );
+// Flash Package
 app.use(flash());
 app.use((req, res, next) => {
-  res.locals.messages = req.flash();
+  res.locals.successMsg = req.flash('success');
+  res.locals.errorMsg = req.flash('error');
   next();
 });
-
+// Method-Override
+app.use(
+  methodOverride('_method', {
+    methods: ['POST', 'GET'],
+  })
+);
 // Routings
 app.use('*', (req, res, next) => {
   userIN = req.session.userID;

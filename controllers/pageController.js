@@ -1,9 +1,20 @@
 const nodemailer = require('nodemailer');
+const Course = require('../models/Course');
+const User = require('../models/User');
 require('dotenv').config();
 
-exports.getIndexPage = (req, res) => {
+exports.getIndexPage = async (req, res) => {
+  const courses = await Course.find().sort('-dateCreated').limit(2);
+  const courseQnt = await Course.find().countDocuments();
+  const studentQnt = await User.countDocuments({ role: 'student' });
+  const teacherQnt = await User.countDocuments({ role: 'teacher' });
+  
   res.status(200).render('index', {
     pageName: 'index',
+    courses,
+    courseQnt,
+    studentQnt,
+    teacherQnt
   });
 };
 
@@ -53,34 +64,38 @@ exports.sendMail = async (req, res) => {
   
   `;
 
-  // SMTP transporter kurulumunu yap
+  // SMTP transporter
   const transporter = nodemailer.createTransport({
     service: 'Gmail',
     host: 'smtp.gmail.com',
     port: 465,
     secure: true, // true for 465, false for 587
     auth: {
-      user: process.env.mail, // Mail adresi
-      pass: process.env.pass, // Mail adresi şifresi
+      user: process.env.mail,
+      pass: process.env.pass,
     },
   });
 
-  // Gönderilecek e-posta bilgileri
+  // Mail content
   const mailOptions = {
-    from: `"SmartEDU Contact Form" <${process.env.mail}>`, // Gönderen adresi
-    to: 'endback0707@gmail.com', // Alıcı adresi
+    from: `"SmartEDU Contact Form" <${process.env.mail}>`,
+    to: 'endback0707@gmail.com',
     subject: 'SmartEDU Contact Form',
     html: outputMessage,
   };
 
-  // E-postayı gönder
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      return console.log(error);
-    }
-    console.log('Mesaj gönderildi: %s', info.messageId);
-  });
+  // Send m & flash message
+  try {
 
-  req.flash('success', 'Mail başarıyla gönderildi!');
-  res.status(200).redirect('contact');
+    await transporter.sendMail(mailOptions);
+    req.flash('success', 'Mail sent successfully!');
+    res.status(200).redirect('/contact');
+
+  } catch (error) {
+
+    console.error('An error occured:', error);
+    req.flash('error', 'An error occurred while sending your mail!');
+    res.status(500).redirect('/contact');
+    
+  }
 };

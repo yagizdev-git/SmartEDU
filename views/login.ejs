@@ -8,6 +8,16 @@
 
             <div class="row">
                 <div class="col-xl-12 col-md-12 col-sm-12">
+
+                    <% if (errorMsg.length > 0) { %>
+
+                        <div class="alert alert-danger">
+                            <h4 class="text-danger py-2"> <i> <%= errorMsg %> </i></h4>
+                        </div>
+
+                    <% } %>
+
+
                     <div class="contact_form">
                         <div id="message"></div>
                         <form method="POST" action="users/login">

@@ -12,8 +12,21 @@
       <div class="container">
         <div class="row"> 
           <div class="col-lg-9 blog-post-single">
-						<div class="row"> 
+						
+						<% if (successMsg.length > 0) { %>
+							<div class="alert alert-success">
+								<h4 class="text-success py-2"> <i> <%= successMsg %> </i></h4>
+						</div>
+						<% } %>
 
+						<% if (errorMsg.length > 0) { %>
+							<div class="alert alert-danger">
+								<h4 class="text-danger py-2"> <i> <%= errorMsg %> </i></h4>
+							</div>
+						<% } %>
+
+						<div class="row"> 
+							
 					<% for (let i=0; i<courses.length; i++) { %>
 
 						<div class="col-lg-6 col-md-6 col-12">

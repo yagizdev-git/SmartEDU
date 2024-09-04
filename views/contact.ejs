@@ -17,16 +17,17 @@
 
             <div class="row">
                 <div class="col-xl-12 col-md-12 col-sm-12">
+                    
+                    <% if(successMsg.length > 0) { %>
+                        <div class="alert alert-success ml-3">
+                            <h4 class="text-success py-2"><i> <%= successMsg %> </i></h4>
+                        </div>
+                    <% } %>
 
-                    <% if (messages) { %>
-                        <p><%= messages.success %></p>
-                        <% if (messages.success) { %>
-                            <p>sa2</p>
-                            <div class="alert alert-success">
-                                <p><%= messages.success %></p>
-                            </div>
-
-                        <% } %>
+                    <% if(errorMsg.length > 0) { %>
+                        <div class="alert alert-danger ml-3">
+                            <h4 class="text-danger py-2"> <i> <%= errorMsg %> </i> </h4>
+                        </div>
                     <% } %>
 
                     <div class="contact_form">

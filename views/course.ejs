@@ -4,7 +4,20 @@
 	
 	<div class="all-title-box">
 		<div class="container text-center">
-			<h1><%= course.name %><span class="m_1"> <%= course.category.name %> </span></h1>
+			
+				<h1>
+					<%= course.name %>
+						<% if(course.category) { %>
+							<span class="m_1"> 
+								<%= course.category.name %> 
+							</span>
+						<% } else { %>
+							<span class="m_1">
+								Uncategorized
+							</span>
+						<% } %>
+				</h1>
+			
 		</div>
 	</div>
 	
@@ -41,13 +54,65 @@
 								<% if ((user && user.role === "teacher") || (!user)) { %>
 
 									<% if ( user && (JSON.stringify(user._id) === JSON.stringify(course.creator._id)) ) { %>
-									
+									<div style="display: flex; justify-content: end;" class="clearfix">
+
+										<button class="btn btn-lg btn-primary text-white font-weight-bold" data-toggle="modal" data-target="#updateCourse<%= course._id %>">
+											<span class="font-weight-bold small">UPDATE</span>
+										</button>
 										<form action="/courses/delete" method="POST">
 											<input type="hidden" name="course_id" value="<%= course._id %>">
-											<button class="btn btn-lg btn-danger text-white font-weight-bold" type="submit">
+											<button class="btn btn-lg btn-danger text-white font-weight-bold ml-2" type="submit">
 												<span class="font-weight-bold small">DELETE</span>
 											</button>
 										</form>
+
+									</div>
+										<div class="modal fade" id="updateCourse<%= course._id %>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+											<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+													<div class="modal-content">
+															<div class="modal-body customer-box">
+																	<!-- Tab panes -->
+																	<div class="tab-content">
+																			<div class="tab-pane active" id="Login">
+										<form method="POST" action="/courses/<%=course.slug%>?_method=PUT" class="form-horizontal">
+											<div class="form-group">
+													<div class="col-sm-12">
+															<input type="text" name="name" class="form-control" value="<%= course.name %>" required>
+													</div>
+											</div>
+											<div class="form-group">
+													<div class="col-sm-12">
+															<textarea rows="8" name="description" class="form-control" required><%= course.description %></textarea>
+													</div>
+											</div>
+											<div class="form-group">
+													<div class="col-sm-12">
+															<select name="category" id="category" class="form-control text-muted" required>
+																<option class="text-muted" value="<%= course.category._id %>" selected hidden><%= course.category.name %></option>
+																<% for (let i=0; i<categories.length; i++) { %>
+																		<option class="text-dark" value="<%= categories[i]._id %>" ><%= categories[i].name %></option>
+																<% } %>
+															</select>
+													</div>	
+											</div>
+											<div class="form-group">
+												<div class="col-sm-12">
+														<input type="hidden" name="role" class="form-control" value="<%= user.role %>">
+												</div>
+										</div>
+											<div class="row"> 
+													<div class="col-sm-10">
+															<button type="submit" class="btn btn-light btn-radius btn-brd grd1">Submit</button>
+															<button type="submit" class="btn btn-light btn-radius btn-brd grd1" data-dismiss="modal" aria-hidden="true">Cancel</button>
+													</div>
+											</div>
+									</form>
+								</div>
+							</div>
+					</div>
+			</div>
+	</div>
+</div>
 
 									<% } else { %>
 

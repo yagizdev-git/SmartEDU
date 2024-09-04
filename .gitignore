@@ -144,4 +144,7 @@ dist
 #Prettier
 .prettierrc
 
+#Custom
+m.md
+
 # End of https://www.toptal.com/developers/gitignore/api/node
