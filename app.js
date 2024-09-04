@@ -19,7 +19,7 @@ global.userIN = null;
 
 // DB Connection
 mongoose
-  .connect('mongodb://localhost/smart-edu-db')
+  .connect('mongodb+srv://yagizyesiloglu07:NWjHZh213VvCR3il@cluster0.zadvh.mongodb.net/smartedu-db?retryWrites=true&w=majority&appName=Cluster0')
   .then(() => {
     console.log('Connected to DB!');
   })
@@ -35,7 +35,7 @@ app.use(
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: true,
-    store: MongoStore.create({ mongoUrl: 'mongodb://localhost/smart-edu-db' }),
+    store: MongoStore.create({ mongoUrl: 'mongodb+srv://yagizyesiloglu07:NWjHZh213VvCR3il@cluster0.zadvh.mongodb.net/smartedu-db?retryWrites=true&w=majority&appName=Cluster0' }),
   })
 );
 // Flash Package
@@ -62,7 +62,7 @@ app.use('/categories', categoryRoute);
 app.use('/users', userRoute);
 
 // Server Start
-const port = 3000;
+const port = process.env.PORT || 8080;
 app.listen(port, (err) => {
   if (err) console.log(err);
   console.log(`Server has started on port ${port}...`);
