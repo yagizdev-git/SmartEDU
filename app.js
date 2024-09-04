@@ -18,14 +18,16 @@ app.set('view engine', 'ejs');
 global.userIN = null;
 
 // DB Connection
-mongoose
-  .connect('mongodb+srv://yagizyesiloglu07:NWjHZh213VvCR3il@cluster0.zadvh.mongodb.net/smartedu-db?retryWrites=true&w=majority&appName=Cluster0')
-  .then(() => {
-    console.log('Connected to DB!');
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+const connectDB = async () => {
+  try {
+    const uri = process.env.MONGODB_URI;
+    await mongoose.connect(uri);
+    console.log('Connected to MongoDB successfuly!');
+  } catch (error) {
+    console.log('connection failed ' + error);
+  }
+}
+connectDB();
 // Middlewares
 app.use(express.static('public'));
 app.use(express.json());
@@ -35,7 +37,7 @@ app.use(
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: true,
-    store: MongoStore.create({ mongoUrl: 'mongodb+srv://yagizyesiloglu07:NWjHZh213VvCR3il@cluster0.zadvh.mongodb.net/smartedu-db?retryWrites=true&w=majority&appName=Cluster0' }),
+    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
   })
 );
 // Flash Package
